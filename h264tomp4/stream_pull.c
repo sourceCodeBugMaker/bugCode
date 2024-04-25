@@ -110,14 +110,14 @@ static void *streamPullProc(void *argc)
         return NULL;
     }
 
-    FILE *file;
-    size_t bytes_read;
+    // FILE *file;
+    // size_t bytes_read;
 
-    file = fopen("raw_stream.h264", "rb");
-    if (file == NULL) {
-        perror("Error opening file");
-        return NULL;
-    }
+    // file = fopen("raw_stream.h264", "rb");
+    // if (file == NULL) {
+    //     perror("Error opening file");
+    //     return NULL;
+    // }
 
     char buffer[BUFFER_SIZE];
     int recvLen;
@@ -127,37 +127,37 @@ static void *streamPullProc(void *argc)
 
     while (s_blStreamIsPulling)
     { 
-		// memset(buffer, 0, BUFFER_SIZE);
-		// recvLen = recvfrom(s_s32SockFd, buffer, BUFFER_SIZE, 0, NULL, NULL);
-		// if (recvLen > 0)
-		// {
-        //     printf("----------revc size = %d----------\n", recvLen);
-        //     while(0 != ringBufferPush(buffer, recvLen))
-        //     {
-        //         rewriteCnt++;
-        //         printf("----------push again after 1ms: size = %d----------\n", recvLen);
-        //         usleep(1000);
-        //     }
-		// }
-
-        memset(buffer, 0, BUFFER_SIZE);
-
-        if ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0)
-        {
-            while(ringBufferPush(buffer, bytes_read) != 0)
+		memset(buffer, 0, BUFFER_SIZE);
+		recvLen = recvfrom(s_s32SockFd, buffer, BUFFER_SIZE, 0, NULL, NULL);
+		if (recvLen > 0)
+		{
+            printf("----------revc size = %d----------\n", recvLen);
+            while(0 != ringBufferPush(buffer, recvLen))
             {
-                printf("===============write fail, again=========================\n");
-                sleep(2);
                 rewriteCnt++;
+                printf("----------push again after 1ms: size = %d----------\n", recvLen);
+                usleep(1000);
             }
-            total_read += bytes_read;
-        }
-        else
-        {
-            pull_complete = 1;
-            printf("===============read end  total = %d=========================\n", total_read);
-            sleep(10);
-        }
+		}
+
+        // memset(buffer, 0, BUFFER_SIZE);
+
+        // if ((bytes_read = fread(buffer, 1, sizeof(buffer), file)) > 0)
+        // {
+        //     while(ringBufferPush(buffer, bytes_read) != 0)
+        //     {
+        //         printf("===============write fail, again=========================\n");
+        //         sleep(2);
+        //         rewriteCnt++;
+        //     }
+        //     total_read += bytes_read;
+        // }
+        // else
+        // {
+        //     pull_complete = 1;
+        //     printf("===============read end  total = %d=========================\n", total_read);
+        //     sleep(10);
+        // }
 
     }
 

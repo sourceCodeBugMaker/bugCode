@@ -16,6 +16,8 @@
 #include "stream_dump.h"
 #include "stream_pull.h"
 
+#define WRITE_MAX_FRAME 1000//在转到mp4文件的帧数达到就结束
+
 
 static FILE *fp = NULL;
 #define recordFileName "tmp.mp4"
@@ -255,7 +257,7 @@ void *streamDumpProc(void *argc)
             default:
                 printf("error, don't support nalu type %d\n", stNalu.type);
         }
-        if (s_s32FrameCnt == 2000)
+        if (s_s32FrameCnt == WRITE_MAX_FRAME)
         {
             printf("========================recording end=====total frame = %d=====dropFrameNum=%d=============\n", s_s32FrameCnt,dropFrameNum);
             mp4ContextFinish();
